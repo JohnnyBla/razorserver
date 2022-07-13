@@ -21,7 +21,9 @@ const HttpError = require('./models/http-error');
 const url = config.mongoUrl;
 const app = express();
 
-const connect = mongoose.connect(url);
+const connect = mongoose.connect(url).then(() => {
+  app.listen(process.env.PORT || 5000);
+});
 
 connect.then(
   () => console.log('Connected to the server'),
