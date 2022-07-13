@@ -9,10 +9,10 @@ const config = require('../config');
 const router = express.Router();
 
 const transporter = nodemailer.createTransport({
-  service: config.mailer.service,
+  service: process.env.service,
   auth: {
-    user: config.mailer.user,
-    pass: config.mailer.pass,
+    user: process.env.user,
+    pass: process.env.pass,
   },
 });
 

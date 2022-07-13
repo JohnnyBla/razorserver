@@ -13,12 +13,12 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 exports.getToken = (user) => {
-  return jwt.sign(user, config.secretKey, { expiresIn: 3600 });
+  return jwt.sign(user, process.env.secretKey, { expiresIn: 3600 });
 };
 
 const opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = config.secretKey;
+opts.secretOrKey = process.env.secretKey;
 
 exports.jwtPassport = passport.use(
   new JwtStrategy(opts, (jwt_payload, done) => {
@@ -38,9 +38,9 @@ exports.jwtPassport = passport.use(
 exports.googlePassport = passport.use(
   new googleStrategy(
     {
-      clientID: config.google.clientID,
-      clientSecret: config.google.clientSecret,
-      callbackURL: config.google.baseURL,
+      clientID: process.env.clientID,
+      clientSecret: process.env.clientSecret,
+      callbackURL: process.env.baseURL,
     },
     (request, accessToken, refreshToken, profile, done) => {
       User.findOne({ googleId: profile.id }, (err, user) => {

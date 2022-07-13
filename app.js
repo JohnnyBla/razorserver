@@ -18,10 +18,10 @@ const loadRouter = require('./routes/loadRouter');
 // custom Http
 const HttpError = require('./models/http-error');
 
-const url = config.mongoUrl;
+const url = process.env.mongoUrl;
 const app = express();
 
-const connect = mongoose.connect(url).then(() => {
+const connect = mongoose.connect(process.env.url).then(() => {
   app.listen(process.env.PORT || 5000);
 });
 
