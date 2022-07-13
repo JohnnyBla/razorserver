@@ -76,9 +76,7 @@ app.use(passport.session());
 
 // using Routes
 // app.use("/api/forms", formsRouter);
-app.get('/', (req, res, next) => {
-  res.json('hello world');
-});
+
 app.use('/api/loads', loadRouter);
 app.use('/api/users', userRouter);
 app.use('/api/expenses', expenseRouter);
