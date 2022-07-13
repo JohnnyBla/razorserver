@@ -50,7 +50,7 @@ router.put('/', (req, res, next) => {
 });
 
 // sign up request
-router.post('/signup', (req, res) => {
+router.post('/signup', passport.authenticate('local'), (req, res) => {
   User.register(
     new User({ username: req.body.username }),
     req.body.password,
