@@ -1,7 +1,6 @@
 const express = require('express');
 const passport = require('passport');
 
-
 const Load = require('../models/load');
 const User = require('../models/users');
 
@@ -56,6 +55,15 @@ loadRouter
       .catch((err) => next(err));
   });
 
+loadRouter.route('/').get((req, res, next) => {
+  Load.find({})
+    .then((load) => {
+      res.statusCode === 200, res.setHeader('Content-Type', 'application/json');
+      res.json(load);
+    })
+    .catch((err) => next(err));
+});
+
 // post loads
 
 loadRouter.route('/').post(authenticate.verifyUser, (req, res, next) => {
@@ -63,7 +71,7 @@ loadRouter.route('/').post(authenticate.verifyUser, (req, res, next) => {
     .populate('loads')
     .then((user) => {
       if (req.body) {
-        req.body.user = req.user.id;        
+        req.body.user = req.user.id;
         const createdLoad = new Load(req.body);
         user.loads.push(createdLoad);
         user
