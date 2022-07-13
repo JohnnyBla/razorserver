@@ -65,9 +65,8 @@ router.post('/signup', (req, res, next) => {
               res.statusCode = 500;
               res.setHeader('Content-Type', 'application/json');
               console.log(err);
-              res.json(err);
+              res.json('thowing an error');
             } else {
-              console.log(req.body.email);
               if (req.body.firstname) {
                 user.firstname = req.body.firstname;
               }
