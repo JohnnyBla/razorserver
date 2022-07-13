@@ -31,6 +31,8 @@ connect.then(
 // Secure traffic only
 
 // view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
