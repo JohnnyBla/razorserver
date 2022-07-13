@@ -6,7 +6,7 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const jwt = require('jsonwebtoken');
 const googleStrategy = require('passport-google-oauth20').Strategy;
 
-const config = require('./config.js');
+// const config = require('./config.js');
 
 exports.local = passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());

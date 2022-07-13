@@ -20,7 +20,7 @@ const HttpError = require('./models/http-error');
 const url = process.env.mongoUrl;
 const app = express();
 
-const connect = mongoose.connect(process.env.url).then(() => {
+const connect = mongoose.connect(url).then(() => {
   app.listen(process.env.PORT || 5000);
 });
 
@@ -72,7 +72,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // using Routes
-// app.use("/api/forms", formsRouter);
+
 
 app.use('/api/loads', loadRouter);
 app.use('/api/users', userRouter);

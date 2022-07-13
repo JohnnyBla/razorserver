@@ -4,7 +4,7 @@ const passport = require('passport');
 const nodemailer = require('nodemailer');
 const emailText = require('../util/emailService');
 const authenticate = require('../authenticate');
-const config = require('../config');
+// const config = require('../config');
 
 const router = express.Router();
 
