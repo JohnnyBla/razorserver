@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const logger = require('morgan');
 const mongoose = require('mongoose');
-const config = require('./config');
 
 const passport = require('passport');
 
@@ -33,8 +32,6 @@ connect.then(
 // Secure traffic only
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -50,19 +47,19 @@ app.use((req, res, next) => {
 });
 
 // Secure traffic only
-app.all('*', (req, res, next) => {
-  if (req.secure) {
-    return next();
-  } else {
-    console.log(
-      `Redirecting to: https://${req.hostname}:${app.get('secPort')}${req.url}`
-    );
-    res.redirect(
-      301,
-      `https://${req.hostname}:${app.get('secPort')}${req.url}`
-    );
-  }
-});
+// app.all('*', (req, res, next) => {
+//   if (req.secure) {
+//     return next();
+//   } else {
+//     console.log(
+//       `Redirecting to: https://${req.hostname}:${app.get('secPort')}${req.url}`
+//     );
+//     res.redirect(
+//       301,
+//       `https://${req.hostname}:${app.get('secPort')}${req.url}`
+//     );
+//   }
+// });
 
 app.use(logger('dev'));
 app.use(express.json());
