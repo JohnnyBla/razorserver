@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
 
 // resetPassword function
 
-router.put('/', cors.corsWithOptions, (req, res, next) => {
+router.put('/', (req, res, next) => {
   User.findOne({ email: req.body.email }).then((user) => {
     if (user) {
       user.setPassword(req.body.password, () => {
