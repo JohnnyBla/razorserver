@@ -69,19 +69,19 @@ router.post('/signup', (req, res) => {
         if (req.body.email) {
           user.email = req.body.email;
         }
-        const mailOptions = {
-          from: emailText.emailaddress,
-          to: req.body.email,
-          subject: 'Thank You For signing up!',
-          html: `<h2>${req.body.username}</h2>${emailText.registerText}`,
-        };
-        transporter.sendMail(mailOptions, function (error, info) {
-          if (error) {
-            console.log(error);
-          } else {
-            console.log('Email sent: ' + info.response);
-          }
-        });
+        // const mailOptions = {
+        //   from: emailText.emailaddress,
+        //   to: req.body.email,
+        //   subject: 'Thank You For signing up!',
+        //   html: `<h2>${req.body.username}</h2>${emailText.registerText}`,
+        // };
+        // transporter.sendMail(mailOptions, function (error, info) {
+        //   if (error) {
+        //     console.log(error);
+        //   } else {
+        //     console.log('Email sent: ' + info.response);
+        //   }
+        // });
 
         user.save((err) => {
           if (err) {
