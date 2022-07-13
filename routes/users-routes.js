@@ -138,7 +138,9 @@ router.post('/login', passport.authenticate('local'), (req, res) => {
 
 router.get(
   '/google/token',
-  passport.authenticate('google', { scope: ['profile'] }),
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+  }),
   (req, res) => {
     console.log(req);
     if (req.user) {

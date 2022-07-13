@@ -41,6 +41,7 @@ exports.googlePassport = passport.use(
       clientID: process.env.clientID,
       clientSecret: process.env.clientSecret,
       callbackURL: process.env.baseURL,
+      scope: 'https://www.googleapis.com/auth/plus.login',
     },
     (request, accessToken, refreshToken, profile, done) => {
       User.findOne({ googleId: profile.id }, (err, user) => {
