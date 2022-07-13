@@ -17,6 +17,19 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// const mailOptions = {
+//   from: emailText.emailaddress,
+//   to: req.body.email,
+//   subject: 'Thank You For signing up!',
+//   html: `<h2>${req.body.username}</h2>${emailText.registerText}`,
+// };
+// transporter.sendMail(mailOptions, function (error, info) {
+//   if (error) {
+//     console.log(error);
+//   } else {
+//     console.log('Email sent: ' + info.response);
+//   }
+// });
 // resetPassword function
 
 router.put('/', (req, res, next) => {
@@ -58,7 +71,7 @@ router.post('/signup', (req, res) => {
       if (err) {
         res.statusCode = 500;
         res.setHeader('Content-Type', 'application/json');
-        res.json(err);
+        res.json({ err: err });
       } else {
         if (req.body.firstname) {
           user.firstname = req.body.firstname;
@@ -66,23 +79,6 @@ router.post('/signup', (req, res) => {
         if (req.body.lastname) {
           user.lastname = req.body.lastname;
         }
-        if (req.body.email) {
-          user.email = req.body.email;
-        }
-        // const mailOptions = {
-        //   from: emailText.emailaddress,
-        //   to: req.body.email,
-        //   subject: 'Thank You For signing up!',
-        //   html: `<h2>${req.body.username}</h2>${emailText.registerText}`,
-        // };
-        // transporter.sendMail(mailOptions, function (error, info) {
-        //   if (error) {
-        //     console.log(error);
-        //   } else {
-        //     console.log('Email sent: ' + info.response);
-        //   }
-        // });
-
         user.save((err) => {
           if (err) {
             res.statusCode = 500;
@@ -93,10 +89,7 @@ router.post('/signup', (req, res) => {
           passport.authenticate('local')(req, res, () => {
             res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json');
-            res.json({
-              success: true,
-              status: 'Registration Successful!',
-            });
+            res.json({ success: true, status: 'Registration Successful!' });
           });
         });
       }
