@@ -54,7 +54,7 @@ expenseRouter
 
 // post expense
 
-expenseRouter.route('/').post(authenticate.verifyUser, (req, res, next) => {
+expenseRouter.route('/').post((req, res, next) => {
   User.findById(req.user.id)
     .populate('expenses')
     .then((user) => {
