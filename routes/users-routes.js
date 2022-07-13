@@ -4,7 +4,6 @@ const passport = require('passport');
 const nodemailer = require('nodemailer');
 const emailText = require('../util/emailService');
 const authenticate = require('../authenticate');
-const cors = require('./cors');
 
 // const config = require('../config');
 

@@ -1,7 +1,7 @@
 // use heroku for the backend
 
 const express = require('express');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const path = require('path');
 const logger = require('morgan');
 const mongoose = require('mongoose');
@@ -66,7 +66,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 
 app.use(passport.initialize());
 app.use(passport.session());
