@@ -4,6 +4,8 @@ const passport = require('passport');
 const nodemailer = require('nodemailer');
 const emailText = require('../util/emailService');
 const authenticate = require('../authenticate');
+const cors = require('./cors');
+
 // const config = require('../config');
 
 const router = express.Router();
@@ -18,7 +20,7 @@ const transporter = nodemailer.createTransport({
 
 // resetPassword function
 
-router.put('/', (req, res, next) => {
+router.put('/', cors.corsWithOptions, (req, res, next) => {
   User.findOne({ email: req.body.email }).then((user) => {
     if (user) {
       user.setPassword(req.body.password, () => {
@@ -57,7 +59,6 @@ router.post('/signup', (req, res) => {
       if (err) {
         res.statusCode = 500;
         res.setHeader('Content-Type', 'application/json');
-        console.log(err);
         res.json(err);
       } else {
         if (req.body.firstname) {
