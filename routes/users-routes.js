@@ -49,71 +49,59 @@ router.put('/', (req, res, next) => {
 });
 
 // sign up request
-router.post('/signup', (req, res, next) => {
-  User.findOne({ email: req.body.email })
-    .then((ExisitingUser) => {
-      if (ExisitingUser) {
+router.post('/signup', (req, res) => {
+  User.register(
+    new User({ username: req.body.username }),
+    req.body.password,
+    (err, user) => {
+      if (err) {
         res.statusCode = 500;
-        res.setHeader('Content-type', 'application/json');
-        res.json({ message: 'Email Address already in use' });
+        res.setHeader('Content-Type', 'application/json');
+        console.log(err);
+        res.json(err);
       } else {
-        User.register(
-          new User({ username: req.body.username }),
-          req.body.password,
-          (err, user) => {
-            if (err) {
-              res.statusCode = 500;
-              res.setHeader('Content-Type', 'application/json');
-              console.log(err);
-              res.json('thowing an error');
-            } else {
-              if (req.body.firstname) {
-                user.firstname = req.body.firstname;
-              }
-              if (req.body.lastname) {
-                user.lastname = req.body.lastname;
-              }
-              if (req.body.email) {
-                user.email = req.body.email;
-              }
-              const mailOptions = {
-                from: emailText.emailaddress,
-                to: req.body.email,
-                subject: 'Thank You For signing up!',
-                html: `<h2>${req.body.username}</h2>${emailText.registerText}`,
-              };
-
-              user.save((err) => {
-                if (err) {
-                  res.statusCode = 500;
-                  res.setHeader('Content-Type', 'application/json');
-                  res.json({ err: err });
-                  return;
-                }
-                passport.authenticate('local')(req, res, () => {
-                  transporter.sendMail(mailOptions, function (error, info) {
-                    if (error) {
-                      console.log(error);
-                    } else {
-                      console.log('Email sent: ' + info.response);
-                    }
-                  });
-                  res.statusCode = 200;
-                  res.setHeader('Content-Type', 'application/json');
-                  res.json({
-                    success: true,
-                    status: 'Registration Successful!',
-                  });
-                });
-              });
-            }
+        if (req.body.firstname) {
+          user.firstname = req.body.firstname;
+        }
+        if (req.body.lastname) {
+          user.lastname = req.body.lastname;
+        }
+        if (req.body.email) {
+          user.email = req.body.email;
+        }
+        const mailOptions = {
+          from: emailText.emailaddress,
+          to: req.body.email,
+          subject: 'Thank You For signing up!',
+          html: `<h2>${req.body.username}</h2>${emailText.registerText}`,
+        };
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('Email sent: ' + info.response);
           }
-        );
+        });
+
+        user.save((err) => {
+          if (err) {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({ err: err });
+            return;
+          }
+          passport.authenticate('local')(req, res, () => {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json({
+              success: true,
+              status: 'Registration Successful!',
+            });
+          });
+        });
       }
-    })
-    .catch((err) => {
-      return next(err);
-    });
+    }
+  );
 });
 
 // login functions
