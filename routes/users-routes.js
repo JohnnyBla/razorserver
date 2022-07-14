@@ -12,7 +12,10 @@ const router = express.Router();
 router.options('*', cors.corsWithOptions, (req, res) => res.sendStatus(200));
 
 const transporter = nodemailer.createTransport({
-  service: process.env.service,
+  pool: true,
+  host: process.env.host,
+  port: 587,
+  secure: true,
   auth: {
     user: process.env.user,
     pass: process.env.pass,
