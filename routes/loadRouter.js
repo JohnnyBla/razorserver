@@ -55,15 +55,6 @@ loadRouter
       .catch((err) => next(err));
   });
 
-loadRouter.route('/').get((req, res, next) => {
-  Load.find({})
-    .then((load) => {
-      res.statusCode === 200, res.setHeader('Content-Type', 'application/json');
-      res.json(load);
-    })
-    .catch((err) => next(err));
-});
-
 // post loads
 
 loadRouter.route('/').post(authenticate.verifyUser, (req, res, next) => {
