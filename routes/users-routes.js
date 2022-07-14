@@ -12,7 +12,6 @@ const router = express.Router();
 router.options('*', cors.corsWithOptions, (req, res) => res.sendStatus(200));
 
 const transporter = nodemailer.createTransport({
-  pool: true,
   host: process.env.host,
   port: 587,
   secure: true,
@@ -31,7 +30,7 @@ router.put('/', cors.corsWithOptions, (req, res, next) => {
         user.save();
 
         const mailOptions = {
-          from: emailText.emailaddress,
+          from: process.env.host,
           to: user.email,
           subject: 'Password Change Successfully!',
           html: `<h2>${user.username}</h2>${emailText.informationChange}`,
@@ -81,7 +80,7 @@ router.post('/signup', cors.corsWithOptions, (req, res) => {
               user.email = req.body.email;
             }
             const mailOptions = {
-              from: emailText.emailaddress,
+              from: process.env.host,
               to: req.body.email,
               subject: 'Thank You For signing up!',
               html: `<h2>${req.body.username}</h2>${emailText.registerText}`,
