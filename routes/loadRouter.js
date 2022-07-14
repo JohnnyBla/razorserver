@@ -1,5 +1,6 @@
 const express = require('express');
 const passport = require('passport');
+const cors = require('./cors');
 
 const Load = require('../models/load');
 const User = require('../models/users');
@@ -13,7 +14,8 @@ const loadRouter = express.Router();
 
 loadRouter
   .route('/user/:uid')
-  .get(async (req, res, next) => {
+  .options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
+  .get(cors.cors, async (req, res, next) => {
     const userId = req.params.uid;
 
     Load.find({ user: userId })
@@ -34,7 +36,7 @@ loadRouter
       })
       .catch((err) => next(err));
   })
-  .delete(authenticate.verifyUser, (req, res, next) => {
+  .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     User.findById(req.params.uid)
       .then((user) => {
         if (user.loads.length !== 0) {
@@ -57,38 +59,41 @@ loadRouter
 
 // post loads
 
-loadRouter.route('/').post(authenticate.verifyUser, (req, res, next) => {
-  User.findById(req.user.id)
-    .populate('loads')
-    .then((user) => {
-      if (req.body) {
-        req.body.user = req.user.id;
-        const createdLoad = new Load(req.body);
-        user.loads.push(createdLoad);
-        user
-          .save()
-          .then(createdLoad.save())
-          .then((user) => {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.json(user);
-          })
-          .catch((err) => next(err));
-      } else {
-        err = new Error(`User ${req.user.id} not found`);
-        err.status = 400;
+loadRouter
+  .route('/')
+  .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
+    User.findById(req.user.id)
+      .populate('loads')
+      .then((user) => {
+        if (req.body) {
+          req.body.user = req.user.id;
+          const createdLoad = new Load(req.body);
+          user.loads.push(createdLoad);
+          user
+            .save()
+            .then(createdLoad.save())
+            .then((user) => {
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              res.json(user);
+            })
+            .catch((err) => next(err));
+        } else {
+          err = new Error(`User ${req.user.id} not found`);
+          err.status = 400;
 
-        return next(err);
-      }
-    })
-    .catch((err) => next(err));
-});
+          return next(err);
+        }
+      })
+      .catch((err) => next(err));
+  });
 
 // handled loads by load id
 
 loadRouter
   .route('/:lid')
-  .get((req, res, next) => {
+  .options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
+  .get(cors.cors, (req, res, next) => {
     const loadId = req.params.lid;
     Load.findById(loadId)
       .then((load) => {
@@ -102,7 +107,7 @@ loadRouter
       })
       .catch((err) => next(err));
   })
-  .delete(authenticate.verifyUser, (req, res, next) => {
+  .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     const loadId = req.params.lid;
     Load.findById(loadId)
       .populate('user')
