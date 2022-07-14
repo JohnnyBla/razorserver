@@ -64,37 +64,48 @@ router.put('/', (req, res, next) => {
 
 // sign up request
 router.post('/signup', (req, res) => {
-  User.register(
-    new User({ username: req.body.username }),
-    req.body.password,
-    (err, user) => {
-      if (err) {
-        res.statusCode = 500;
-        res.setHeader('Content-Type', 'application/json');
-        res.json({ err: err });
-      } else {
-        if (req.body.firstname) {
-          user.firstname = req.body.firstname;
-        }
-        if (req.body.lastname) {
-          user.lastname = req.body.lastname;
-        }
-        user.save((err) => {
+  User.findOne({ email: req.body.email }).then((user) => {
+    if (user) {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.end('Email Adress already exisit');
+    } else {
+      User.register(
+        new User({ username: req.body.username }),
+        req.body.password,
+        (err, user) => {
           if (err) {
             res.statusCode = 500;
             res.setHeader('Content-Type', 'application/json');
             res.json({ err: err });
-            return;
+          } else {
+            if (req.body.firstname) {
+              user.firstname = req.body.firstname;
+            }
+            if (req.body.lastname) {
+              user.lastname = req.body.lastname;
+            }
+            if (req.body.email) {
+              user.email = req.body.email;
+            }
+            user.save((err) => {
+              if (err) {
+                res.statusCode = 500;
+                res.setHeader('Content-Type', 'application/json');
+                res.json({ err: err });
+                return;
+              }
+              passport.authenticate('local')(req, res, () => {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.json({ success: true, status: 'Registration Successful!' });
+              });
+            });
           }
-          passport.authenticate('local')(req, res, () => {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.json({ success: true, status: 'Registration Successful!' });
-          });
-        });
-      }
+        }
+      );
     }
-  );
+  });
 });
 
 // login functions
