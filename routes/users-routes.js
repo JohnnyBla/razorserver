@@ -4,10 +4,12 @@ const passport = require('passport');
 const nodemailer = require('nodemailer');
 const emailText = require('../util/emailService');
 const authenticate = require('../authenticate');
+const cors = require('./cors');
 
 // const config = require('../config');
 
 const router = express.Router();
+router.options('*', cors.corsWithOptions, (req, res) => res.sendStatus(200));
 
 const transporter = nodemailer.createTransport({
   service: process.env.service,
@@ -19,7 +21,7 @@ const transporter = nodemailer.createTransport({
 
 // resetPassword function
 
-router.put('/', (req, res, next) => {
+router.put('/', cors.corsWithOptions, (req, res, next) => {
   User.findOne({ email: req.body.email }).then((user) => {
     if (user) {
       user.setPassword(req.body.password, () => {
@@ -50,7 +52,7 @@ router.put('/', (req, res, next) => {
 });
 
 // sign up request
-router.post('/signup', (req, res) => {
+router.post('/signup', cors.corsWithOptions, (req, res) => {
   User.findOne({ email: req.body.email }).then((user) => {
     if (user) {
       res.statusCode = 500;
@@ -110,20 +112,25 @@ router.post('/signup', (req, res) => {
 
 // login functions
 
-router.post('/login', passport.authenticate('local'), (req, res) => {
-  const token = authenticate.getToken({ _id: req.user._id });
-  const username = req.user.username;
-  const userid = req.user.id;
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'application/json');
-  res.json({
-    success: true,
-    token: token,
-    username: username,
-    userid: userid,
-    status: 'You are successfully logged in!',
-  });
-});
+router.post(
+  '/login',
+  cors.corsWithOptions,
+  passport.authenticate('local'),
+  (req, res) => {
+    const token = authenticate.getToken({ _id: req.user._id });
+    const username = req.user.username;
+    const userid = req.user.id;
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({
+      success: true,
+      token: token,
+      username: username,
+      userid: userid,
+      status: 'You are successfully logged in!',
+    });
+  }
+);
 
 // google login functions
 
@@ -162,7 +169,7 @@ router.get(
 
 // logout function
 
-router.get('/logout', (req, res, next) => {
+router.get('/logout', cors.corsWithOptions, (req, res, next) => {
   if (req.session) {
     req.session.destroy();
     res.clearCookie('session-id');

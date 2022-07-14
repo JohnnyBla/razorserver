@@ -3,6 +3,7 @@ const passport = require('passport');
 
 const Expense = require('../models/expense');
 const User = require('../models/users');
+const cors = require('./cors');
 
 const authenticate = require('../authenticate');
 const HttpError = require('../models/http-error');
@@ -13,7 +14,8 @@ const expenseRouter = express.Router();
 
 expenseRouter
   .route('/user/:uid')
-  .get(async (req, res, next) => {
+  .options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
+  .get(cors.cors, async (req, res, next) => {
     const userId = req.params.uid;
     User.findById(userId)
       .populate('expenses')
@@ -31,7 +33,7 @@ expenseRouter
       })
       .catch((err) => next(err));
   })
-  .delete(authenticate.verifyUser, (req, res, next) => {
+  .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     User.findById(req.params.uid)
       .then((user) => {
         if (user.expenses.length !== 0) {
@@ -54,36 +56,39 @@ expenseRouter
 
 // post expense
 
-expenseRouter.route('/').post(authenticate.verifyUser, (req, res, next) => {
-  User.findById(req.user.id)
-    .populate('expenses')
-    .then((user) => {
-      if (req.body) {
-        req.body.user = req.user.id;
-        const createExpense = new Expense(req.body);
-        user.expenses.push(createExpense);
+expenseRouter
+  .route('/')
+  .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
+    User.findById(req.user.id)
+      .populate('expenses')
+      .then((user) => {
+        if (req.body) {
+          req.body.user = req.user.id;
+          const createExpense = new Expense(req.body);
+          user.expenses.push(createExpense);
 
-        user
-          .save()
-          .then(createExpense.save())
-          .then((user) => {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.json(user);
-          })
-          .catch((err) => next(err));
-      } else {
-        err = new Error(`$user ${req.user.id} not found`);
-        err.status = 400;
-        return next(err);
-      }
-    })
-    .catch((err) => next(err));
-});
+          user
+            .save()
+            .then(createExpense.save())
+            .then((user) => {
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              res.json(user);
+            })
+            .catch((err) => next(err));
+        } else {
+          err = new Error(`$user ${req.user.id} not found`);
+          err.status = 400;
+          return next(err);
+        }
+      })
+      .catch((err) => next(err));
+  });
 
 expenseRouter
   .route('/:eid')
-  .get(authenticate.verifyUser, (req, res, next) => {
+  .options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
+  .get(cors.cors, authenticate.verifyUser, (req, res, next) => {
     const expenseId = req.params.eid;
     Expense.findById(expenseId)
       .then((expense) => {
@@ -100,7 +105,7 @@ expenseRouter
       })
       .catch((err) => next(err));
   })
-  .delete(authenticate.verifyUser, (req, res, next) => {
+  .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     const expenseId = req.params.eid;
     Expense.findById(expenseId)
       .populate('user')
