@@ -17,19 +17,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// const mailOptions = {
-//   from: emailText.emailaddress,
-//   to: req.body.email,
-//   subject: 'Thank You For signing up!',
-//   html: `<h2>${req.body.username}</h2>${emailText.registerText}`,
-// };
-// transporter.sendMail(mailOptions, function (error, info) {
-//   if (error) {
-//     console.log(error);
-//   } else {
-//     console.log('Email sent: ' + info.response);
-//   }
-// });
 // resetPassword function
 
 router.put('/', (req, res, next) => {
@@ -96,6 +83,19 @@ router.post('/signup', (req, res) => {
                 return;
               }
               passport.authenticate('local')(req, res, () => {
+                const mailOptions = {
+                  from: emailText.emailaddress,
+                  to: req.body.email,
+                  subject: 'Thank You For signing up!',
+                  html: `<h2>${req.body.username}</h2>${emailText.registerText}`,
+                };
+                transporter.sendMail(mailOptions, function (error, info) {
+                  if (error) {
+                    console.log(error);
+                  } else {
+                    console.log('Email sent: ' + info.response);
+                  }
+                });
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'application/json');
                 res.json({ success: true, status: 'Registration Successful!' });
