@@ -7,6 +7,7 @@ const logger = require('morgan');
 const mongoose = require('mongoose');
 
 const passport = require('passport');
+const cors = require(cors);
 
 // Routers Import
 // const formsRouter = require("./routes/forms-router");
@@ -32,6 +33,8 @@ connect.then(
 // Secure traffic only
 
 // view engine setup
+
+app.use(cors());
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -72,7 +75,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // using Routes
-
 
 app.use('/api/loads', loadRouter);
 app.use('/api/users', userRouter);
