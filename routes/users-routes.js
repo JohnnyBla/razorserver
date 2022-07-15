@@ -129,7 +129,7 @@ router.post(
 router.post(
   '/login',
   cors.corsWithOptions,
-  usernames.usernameToLowerCase,
+  userName.usernameToLowerCase,
   passport.authenticate('local'),
   (req, res) => {
     const token = authenticate.getToken({ _id: req.user._id });
