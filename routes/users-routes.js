@@ -5,6 +5,7 @@ const nodemailer = require('nodemailer');
 const emailText = require('../util/emailService');
 const authenticate = require('../authenticate');
 const cors = require('./cors');
+const userName = require('../middleware/usernameCase');
 
 // const config = require('../config');
 
@@ -21,7 +22,7 @@ const transporter = nodemailer.createTransport({
 
 // resetPassword function
 
-router.put('/', cors.corsWithOptions, (req, res, next) => {
+router.put('/', cors.corsWithOptions, userName, (req, res, next) => {
   User.findOne({ email: req.body.email }).then((user) => {
     if (user) {
       user.setPassword(req.body.password, () => {
@@ -52,7 +53,7 @@ router.put('/', cors.corsWithOptions, (req, res, next) => {
 });
 
 // sign up request
-router.post('/signup', cors.corsWithOptions, (req, res) => {
+router.post('/signup', cors.corsWithOptions, userName, (req, res) => {
   User.findOne({ email: req.body.email }).then((user) => {
     if (user) {
       res.statusCode = 500;
