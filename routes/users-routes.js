@@ -22,94 +22,107 @@ const transporter = nodemailer.createTransport({
 
 // resetPassword function
 
-router.put('/', cors.corsWithOptions, userName, (req, res, next) => {
-  User.findOne({ email: req.body.email }).then((user) => {
-    if (user) {
-      user.setPassword(req.body.password, () => {
-        user.save();
+router.put(
+  '/',
+  cors.corsWithOptions,
+  userName.usernameToLowerCase,
+  (req, res, next) => {
+    User.findOne({ email: req.body.email }).then((user) => {
+      if (user) {
+        user.setPassword(req.body.password, () => {
+          user.save();
 
-        const mailOptions = {
-          from: process.env.host,
-          to: user.email,
-          subject: 'Password Change Successfully!',
-          html: `<h2>${user.username}</h2>${emailText.informationChange}`,
-        };
-        transporter.sendMail(mailOptions, function (error, info) {
-          if (error) {
-            console.log(error);
-          } else {
-            console.log('Email sent: ' + info.response);
-          }
+          const mailOptions = {
+            from: process.env.host,
+            to: user.email,
+            subject: 'Password Change Successfully!',
+            html: `<h2>${user.username}</h2>${emailText.informationChange}`,
+          };
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+          });
+          res.statusCode = 200;
+          res.json('Password Reset Successful');
         });
-        res.statusCode = 200;
-        res.json('Password Reset Successful');
-      });
-    } else {
-      const err = new Error('Invalid Email');
-      err.status = 500;
-      return next(err);
-    }
-  });
-});
+      } else {
+        const err = new Error('Invalid Email');
+        err.status = 500;
+        return next(err);
+      }
+    });
+  }
+);
 
 // sign up request
-router.post('/signup', cors.corsWithOptions, userName, (req, res) => {
-  User.findOne({ email: req.body.email }).then((user) => {
-    if (user) {
-      res.statusCode = 500;
-      res.setHeader('Content-Type', 'application/json');
-      res.end('Email Adress already exisit');
-    } else {
-      User.register(
-        new User({ username: req.body.username }),
-        req.body.password,
-        (err, user) => {
-          if (err) {
-            res.statusCode = 500;
-            res.setHeader('Content-Type', 'application/json');
-            res.json({ err: err });
-          } else {
-            if (req.body.firstname) {
-              user.firstname = req.body.firstname;
-            }
-            if (req.body.lastname) {
-              user.lastname = req.body.lastname;
-            }
-            if (req.body.email) {
-              user.email = req.body.email;
-            }
-            const mailOptions = {
-              from: process.env.host,
-              to: req.body.email,
-              subject: 'Thank You For signing up!',
-              html: `<h2>${req.body.username}</h2>${emailText.registerText}`,
-            };
-            transporter.sendMail(mailOptions, function (error, info) {
-              if (error) {
-                console.log(error);
-              } else {
-                console.log('Email sent: ' + info.response);
+router.post(
+  '/signup',
+  cors.corsWithOptions,
+  userName.usernameToLowerCase,
+  (req, res) => {
+    User.findOne({ email: req.body.email }).then((user) => {
+      if (user) {
+        res.statusCode = 500;
+        res.setHeader('Content-Type', 'application/json');
+        res.end('Email Adress already exisit');
+      } else {
+        User.register(
+          new User({ username: req.body.username }),
+          req.body.password,
+          (err, user) => {
+            if (err) {
+              res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.json({ err: err });
+            } else {
+              if (req.body.firstname) {
+                user.firstname = req.body.firstname;
               }
-            });
-            user.save((err) => {
-              if (err) {
-                res.statusCode = 500;
-                res.setHeader('Content-Type', 'application/json');
-                res.json({ err: err });
-                return;
+              if (req.body.lastname) {
+                user.lastname = req.body.lastname;
               }
-              passport.authenticate('local')(req, res, () => {
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.json({ success: true, status: 'Registration Successful!' });
+              if (req.body.email) {
+                user.email = req.body.email;
+              }
+              const mailOptions = {
+                from: process.env.host,
+                to: req.body.email,
+                subject: 'Thank You For signing up!',
+                html: `<h2>${req.body.username}</h2>${emailText.registerText}`,
+              };
+              transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                  console.log(error);
+                } else {
+                  console.log('Email sent: ' + info.response);
+                }
               });
-            });
+              user.save((err) => {
+                if (err) {
+                  res.statusCode = 500;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.json({ err: err });
+                  return;
+                }
+                passport.authenticate('local')(req, res, () => {
+                  res.statusCode = 200;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.json({
+                    success: true,
+                    status: 'Registration Successful!',
+                  });
+                });
+              });
+            }
           }
-        }
-      );
-    }
-  });
-});
+        );
+      }
+    });
+  }
+);
 
 // login functions
 
