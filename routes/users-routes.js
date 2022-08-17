@@ -22,40 +22,35 @@ const transporter = nodemailer.createTransport({
 
 // resetPassword function
 
-router.put(
-  '/',
-  cors.corsWithOptions,
-  userName.usernameToLowerCase,
-  (req, res, next) => {
-    User.findOne({ email: req.body.email }).then((user) => {
-      if (user) {
-        user.setPassword(req.body.password, () => {
-          user.save();
+router.put('/', cors.corsWithOptions, (req, res, next) => {
+  User.findOne({ email: req.body.email }).then((user) => {
+    if (user) {
+      user.setPassword(req.body.password, () => {
+        user.save();
 
-          const mailOptions = {
-            from: process.env.host,
-            to: user.email,
-            subject: 'Password Change Successfully!',
-            html: `<h2>${user.username}</h2>${emailText.informationChange}`,
-          };
-          transporter.sendMail(mailOptions, function (error, info) {
-            if (error) {
-              console.log(error);
-            } else {
-              console.log('Email sent: ' + info.response);
-            }
-          });
-          res.statusCode = 200;
-          res.json('Password Reset Successful');
+        const mailOptions = {
+          from: process.env.host,
+          to: user.email,
+          subject: 'Password Change Successfully!',
+          html: `<h2>${user.username}</h2>${emailText.informationChange}`,
+        };
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('Email sent: ' + info.response);
+          }
         });
-      } else {
-        const err = new Error('Invalid Email');
-        err.status = 500;
-        return next(err);
-      }
-    });
-  }
-);
+        res.statusCode = 200;
+        res.json('Password Reset Successful');
+      });
+    } else {
+      const err = new Error('Invalid Email');
+      err.status = 500;
+      return next(err);
+    }
+  });
+});
 
 // sign up request
 router.post(
