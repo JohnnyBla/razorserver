@@ -191,6 +191,4 @@ router.get('/logout', cors.corsWithOptions, (req, res, next) => {
   }
 });
 
-// routers for password reset handlings
-
 module.exports = router;
