@@ -9,6 +9,7 @@ const userSchema = new Schema({
   email: { type: String, unique: true },
   loads: [{ type: mongoose.Types.ObjectId, ref: 'Load' }],
   expenses: [{ type: mongoose.Types.ObjectId, ref: 'Expense' }],
+  files: [{ type: mongoose.Types.ObjectId, ref: 'Files' }],
 });
 
 userSchema.plugin(passportLocalMongoose);
